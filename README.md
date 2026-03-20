@@ -78,13 +78,25 @@ bitbake qemu-ex-image
 bitbake webservice-container
 ```
 
-6. Run with QEMU (qemu-ex only):
+6. Run the image:
 
+**qemu-ex:**
 ```bash
 runqemu qemux86-64 qemu-ex-image nographic
 ```
 
 Login as `root` with no password.
+
+**docker-ex** — import and run the container:
+```bash
+docker import \
+  --change 'ENTRYPOINT ["/usr/bin/echo-server"]' \
+  --change 'CMD ["--host", "0.0.0.0", "--port", "8080"]' \
+  --change 'EXPOSE 8080' \
+  ./tmp/deploy/images/qemux86-64/webservice-container-qemux86-64.rootfs.tar.bz2 \
+  webservice-container:latest
+docker run -p 8080:8080 webservice-container:latest
+```
 
 7. Test the echo webservice:
 
