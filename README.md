@@ -29,7 +29,7 @@ git submodule update --init --recursive
 cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
   $PWD/../../bitbake-setup.conf.json \
-  exein-demos qemu-ex machine/qemux86-64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
+  qemu-ex machine/qemux86-64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
   cd -
 ```
 
@@ -38,7 +38,7 @@ cd bitbake/bin/ && \
 cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
   $PWD/../../bitbake-setup.conf.json \
-  exein-demos qemu-ex machine/qemuarm64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
+  qemu-ex machine/qemuarm64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
   cd -
 ```
 
@@ -47,7 +47,7 @@ cd bitbake/bin/ && \
 cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
   $PWD/../../bitbake-setup.conf.json \
-  exein-demos docker-ex machine/qemux86-64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
+  docker-ex machine/qemux86-64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
   cd -
 ```
 
