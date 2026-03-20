@@ -1,6 +1,6 @@
 {
     "version": "1.0",
-    "description": "Simple docker webservice example using Yocto",
+    "description": "Yocto demos for testing the Exein runtime",
     "sources": {
         "bitbake": {
             "git-remote": {
@@ -10,7 +10,7 @@
                     }
                 },
                 "branch": "master",
-                "rev": "f23e186a75e71ba885b9b53a1dfda99af29c67b0"
+                "rev": "76b6edbd3b1f8d60c9e5720c8beae41caec694b7"
             },
             "path": "bitbake"
         },
@@ -21,8 +21,8 @@
                         "uri": "git://git.openembedded.org/openembedded-core;protocol=https"
                     }
                 },
-                "branch": "whinlatter",
-                "rev": "7ac6a43dafa85732178933716f6ba7cdf8557990"
+                "branch": "master",
+                "rev": "aeb2a667b93a14dec2fb9f564c77912b56803d2b"
             },
             "path": "openembedded-core"
         },
@@ -33,8 +33,8 @@
                         "uri": "git://git.yoctoproject.org/meta-yocto;protocol=https"
                     }
                 },
-                "branch": "whinlatter",
-                "rev": "d02d3faaf4d6075ea03e9eb47654ec7639f929a0"
+                "branch": "master",
+                "rev": "c7fa63bea78248597798739aa4da49a9f4405b9c"
             },
             "path": "meta-yocto"
         },
@@ -45,10 +45,22 @@
                         "uri": "git://git.openembedded.org/meta-openembedded;protocol=https"
                     }
                 },
-                "branch": "whinlatter",
-                "rev": "a4e768dcfae181dd99e39c4286fa0729ca7f4e47"
+                "branch": "master",
+                "rev": "6b55bede28261c38fb1da1474ca5c991ac414c93"
             },
             "path": "meta-openembedded"
+        },
+        "meta-exein": {
+            "git-remote": {
+                "remotes": {
+                    "origin": {
+                        "uri": "git://github.com/thomas-roos/meta-exein;protocol=https"
+                    }
+                },
+                "branch": "support-master",
+                "rev": "d7528c529382a659e2bf3c5463676e08e53054f2"
+            },
+            "path": "meta-exein"
         },
         "meta-virtualization": {
             "git-remote": {
@@ -57,8 +69,8 @@
                         "uri": "git://git.yoctoproject.org/meta-virtualization;protocol=https"
                     }
                 },
-                "branch": "whinlatter",
-                "rev": "8f03a0cc8950ef5d5e4f11d9ae494946d1991e45"
+                "branch": "master",
+                "rev": "475530ac08ecf716917f48dfa60e0607d324ff9a"
             },
             "path": "meta-virtualization"
         }
@@ -80,7 +92,7 @@
                 "bb-layers-file-relative": [
                     "meta-application"
                 ],
-				"oe-fragments": ["core/yocto/sstate-mirror-cdn", "application/docker-ex"],
+                "oe-fragments": ["core/yocto/sstate-mirror-cdn", "application/docker-ex"],
                 "oe-fragments-one-of": {
                     "machine": {
                         "description": "Target machine architecture",
