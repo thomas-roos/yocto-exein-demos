@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Thomas Roos <thomas@exein.io>
+Date: Thu, 19 Mar 2026 00:00:00 +0000
+Subject: [PATCH] bpf-builder: suppress -Wdefault-const-init-var-unsafe
+
+Clang 19+ introduces -Wdefault-const-init-var-unsafe which triggers on
+the BPF_CORE_READ macro. Suppress it explicitly to allow building with
+newer clang versions.
+
+Upstream-Status: Pending
+
+Signed-off-by: Thomas Roos <thomas@exein.io>
+---
+ crates/bpf-builder/src/lib.rs | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/crates/bpf-builder/src/lib.rs b/crates/bpf-builder/src/lib.rs
+index 1234567..abcdefg 100644
+--- a/crates/bpf-builder/src/lib.rs
++++ b/crates/bpf-builder/src/lib.rs
+@@ -49,6 +49,7 @@ fn compile(probe: &str, out_object: PathBuf, extra_args: &[String]) -> anyhow::
+         .args(["-target", "bpf"])
+         .arg("-c")
+         .arg("-Werror")
++        .arg("-Wno-default-const-init-var-unsafe")
+         .arg("-fno-stack-protector")
+         .arg(format!(
+             "-D__TARGET_ARCH_{}",
