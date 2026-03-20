@@ -101,7 +101,7 @@ bitbake webservice-container
 
 **qemu-ex:**
 ```bash
-runqemu qemux86-64 qemu-ex-image nographic
+runqemu nographic snapshot slirp kvm
 ```
 
 Login as `root` with no password.
