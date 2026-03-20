@@ -1,4 +1,11 @@
-A yocto layer setup to build a minimal webservice docker container.
+Yocto demo images for testing the Exein security runtime.
+
+## Demos
+
+| Name | Description | Target |
+|---|---|---|
+| `qemu-ex` | Minimal QEMU image with Exein/Pulsar security runtime and Python echo webservice | QEMU (x86-64, arm64) |
+| `docker-ex` | Minimal OCI container image with Python echo webservice | Docker (x86-64) |
 
 
 ## Building with bitbake-setup
@@ -6,7 +13,7 @@ A yocto layer setup to build a minimal webservice docker container.
 1. Clone with submodules:
 
 ```bash
-git clone --recurse-submodules https://github.com/thomas-roos/docker-ex
+git clone --recurse-submodules https://github.com/thomas-roos/yocto-exein-demos
 ```
 
 Or if already cloned:
@@ -17,62 +24,70 @@ git submodule update --init --recursive
 
 2. Initialize the build environment:
 
-**For ARM64:**
+**qemu-ex (x86-64):**
 ```bash
 cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
   $PWD/../../bitbake-setup.conf.json \
-  docker-ex machine/qemuarm64 distro/poky application/docker-ex core/yocto/sstate-mirror-cdn --non-interactive && \
+  exein-demos qemu-ex machine/qemux86-64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
   cd -
 ```
 
-**For x86-64:**
+**qemu-ex (arm64):**
 ```bash
 cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
   $PWD/../../bitbake-setup.conf.json \
-  docker-ex machine/qemux86-64 distro/poky application/docker-ex core/yocto/sstate-mirror-cdn --non-interactive && \
+  exein-demos qemu-ex machine/qemuarm64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
   cd -
 ```
 
-3. Source the build environment:
-
-**For ARM64:**
+**docker-ex:**
 ```bash
-. ./bitbake-builds/bitbake-setup-docker-ex-machine_qemuarm64-distro_poky/build/init-build-env
+cd bitbake/bin/ && \
+./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
+  $PWD/../../bitbake-setup.conf.json \
+  exein-demos docker-ex machine/qemux86-64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
+  cd -
 ```
 
-**For x86-64:**
+> The build directories will be created at `../bitbake-builds/` relative to the repo.
+
+3. Install buildtools (required once per build directory):
+
 ```bash
-. ./bitbake-builds/bitbake-setup-docker-ex-machine_qemux86-64-distro_poky/build/init-build-env
+. ../bitbake-builds/<build-dir>/build/init-build-env && bitbake-setup install-buildtools
 ```
 
-4. Build the image:
+4. Source the build environment:
 
+```bash
+. ../bitbake-builds/<build-dir>/buildtools/environment-setup-x86_64-pokysdk-linux && \
+. ../bitbake-builds/<build-dir>/build/init-build-env
+```
+
+5. Build the image:
+
+**qemu-ex:**
+```bash
+bitbake qemu-ex-image
+```
+
+**docker-ex:**
 ```bash
 bitbake webservice-container
 ```
 
-5. Import the image (one-time setup):
+6. Run with QEMU (qemu-ex only):
 
-**For ARM64:**
 ```bash
-docker import --change 'ENTRYPOINT ["/usr/bin/echo-server"]' --change 'CMD ["--host", "0.0.0.0", "--port", "8080"]' --change 'EXPOSE 8080' ./tmp/deploy/images/qemuarm64/webservice-container-qemuarm64.rootfs.tar.bz2 webservice-container:latest
+runqemu qemux86-64 qemu-ex-image nographic
 ```
 
-**For x86-64:**
-```bash
-docker import --change 'ENTRYPOINT ["/usr/bin/echo-server"]' --change 'CMD ["--host", "0.0.0.0", "--port", "8080"]' --change 'EXPOSE 8080' ./tmp/deploy/images/qemux86-64/webservice-container-qemux86-64.rootfs.tar.bz2 webservice-container:latest
-```
+Login as `root` with no password.
 
-6. Run and test the container
+7. Test the echo webservice:
 
 ```bash
-docker run -p 8080:8080 webservice-container:latest
-```
-
-In a different termninal you can test it
-
-```bash
-curl -X POST -d "Hello Docker!" http://localhost:8080/test
+curl -X POST -d "Hello Exein!" http://localhost:8080/test
 ```
