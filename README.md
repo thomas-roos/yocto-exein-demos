@@ -51,19 +51,38 @@ cd bitbake/bin/ && \
   cd -
 ```
 
-> The build directories will be created at `../bitbake-builds/` relative to the repo.
-
 3. Install buildtools (required once per build directory):
 
+**qemu-ex (x86-64):**
 ```bash
-. ../bitbake-builds/<build-dir>/build/init-build-env && bitbake-setup install-buildtools
+. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-machine_qemux86-64/build/init-build-env && bitbake-setup install-buildtools
+```
+
+**qemu-ex (arm64):**
+```bash
+. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-machine_qemuarm64/build/init-build-env && bitbake-setup install-buildtools
+```
+
+**docker-ex:**
+```bash
+. ./bitbake-builds/bitbake-setup-docker-ex-distro_poky-machine_qemux86-64/build/init-build-env && bitbake-setup install-buildtools
 ```
 
 4. Source the build environment:
 
+**qemu-ex (x86-64):**
 ```bash
-. ../bitbake-builds/<build-dir>/buildtools/environment-setup-x86_64-pokysdk-linux && \
-. ../bitbake-builds/<build-dir>/build/init-build-env
+. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-machine_qemux86-64/build/init-build-env
+```
+
+**qemu-ex (arm64):**
+```bash
+. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-machine_qemuarm64/build/init-build-env
+```
+
+**docker-ex:**
+```bash
+. ./bitbake-builds/bitbake-setup-docker-ex-distro_poky-machine_qemux86-64/build/init-build-env
 ```
 
 5. Build the image:
