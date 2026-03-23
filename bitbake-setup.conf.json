@@ -99,7 +99,7 @@
                     },
                     "distro": {
                         "description": "Distribution variants",
-                        "options": ["distro/poky"]
+                        "options": ["distro/poky", "distro/poky-altcfg"]
                     }
                 }
             },

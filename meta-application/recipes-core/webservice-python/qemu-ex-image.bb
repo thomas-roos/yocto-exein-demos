@@ -17,4 +17,5 @@ IMAGE_INSTALL += " \
     pulsar \
     lsof \
     curl \
+    jq \
 "

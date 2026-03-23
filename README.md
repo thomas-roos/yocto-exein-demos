@@ -29,7 +29,7 @@ git submodule update --init --recursive
 cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
   $PWD/../../bitbake-setup.conf.json \
-  qemu-ex machine/qemux86-64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
+  qemu-ex machine/qemux86-64 distro/poky-altcfg core/yocto/sstate-mirror-cdn --non-interactive && \
   cd -
 ```
 
@@ -38,7 +38,7 @@ cd bitbake/bin/ && \
 cd bitbake/bin/ && \
 ./bitbake-setup --setting default top-dir-prefix $PWD/../../ init \
   $PWD/../../bitbake-setup.conf.json \
-  qemu-ex machine/qemuarm64 distro/poky core/yocto/sstate-mirror-cdn --non-interactive && \
+  qemu-ex machine/qemuarm64 distro/poky-altcfg core/yocto/sstate-mirror-cdn --non-interactive && \
   cd -
 ```
 
@@ -55,12 +55,12 @@ cd bitbake/bin/ && \
 
 **qemu-ex (x86-64):**
 ```bash
-. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-machine_qemux86-64/build/init-build-env && bitbake-setup install-buildtools
+. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-altcfg-machine_qemux86-64/build/init-build-env && bitbake-setup install-buildtools
 ```
 
 **qemu-ex (arm64):**
 ```bash
-. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-machine_qemuarm64/build/init-build-env && bitbake-setup install-buildtools
+. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-altcfg-machine_qemuarm64/build/init-build-env && bitbake-setup install-buildtools
 ```
 
 **docker-ex:**
@@ -72,12 +72,12 @@ cd bitbake/bin/ && \
 
 **qemu-ex (x86-64):**
 ```bash
-. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-machine_qemux86-64/build/init-build-env
+. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-altcfg-machine_qemux86-64/build/init-build-env
 ```
 
 **qemu-ex (arm64):**
 ```bash
-. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-machine_qemuarm64/build/init-build-env
+. ./bitbake-builds/bitbake-setup-qemu-ex-distro_poky-altcfg-machine_qemuarm64/build/init-build-env
 ```
 
 **docker-ex:**
@@ -99,9 +99,14 @@ bitbake webservice-container
 
 6. Run the image:
 
-**qemu-ex:**
+**qemu-ex** — add your user to the `kvm` group (required once):
 ```bash
-runqemu nographic snapshot slirp kvm
+sudo usermod -aG kvm $USER
+```
+
+Then run:
+```bash
+runqemu nographic snapshot kvm
 ```
 
 Login as `root` with no password.
@@ -122,3 +127,65 @@ docker run -p 8080:8080 webservice-container:latest
 ```bash
 curl -X POST -d "Hello Exein!" http://localhost:8080/test
 ```
+
+## Testing Pulsar security runtime
+
+### Additional terminals
+
+SSH into the running VM from the host to open additional terminals:
+
+```bash
+ssh root@192.168.7.2
+```
+
+### Watch alerts in real time
+
+Inside the QEMU VM, monitor Pulsar threat alerts:
+
+```bash
+journalctl -fu pulsard | uniq
+```
+
+
+To see all raw output including internal diagnostics:
+
+```bash
+journalctl -fu pulsard
+```
+
+### Trigger detections
+
+In a separate terminal session inside the VM, run actions that Pulsar's built-in rules detect:
+
+```bash
+# Triggers "Read sensitive file" (severity: medium)
+cat /etc/shadow
+cat /etc/passwd
+```
+
+Each access will produce a JSON alert in the journal with the threat description,
+severity, source file, and PID of the offending process.
+
+### Alert format
+
+Alerts are emitted as JSON objects. Key fields:
+
+| Field | Description |
+|---|---|
+| `header.threat.description` | Human-readable rule name, e.g. "Read sensitive file" |
+| `header.threat.extra.severity` | `low`, `medium`, `high`, or `critical` |
+| `header.threat.extra.category` | MITRE ATT&CK tactic category |
+| `header.pid` | PID of the process that triggered the rule |
+| `header.image` | Executable path (empty if process started before Pulsar) |
+| `payload.type` | Event type, e.g. `FileOpened`, `Exec` |
+| `payload.content` | Event-specific data, e.g. `filename`, `flags` |
+
+### Notes
+
+- `image: ""` and `parent_pid: 0` in alerts mean the process was already running
+  when Pulsar started and was not yet tracked. Detections are still accurate.
+- `broadcast channel lagged N messages` warnings are benign and appear when many
+  events arrive faster than the internal channel can drain (e.g. during a burst of
+  file accesses).
+- Pulsar in this version is **detect-only** — it logs threats but does not block or
+  kill processes.

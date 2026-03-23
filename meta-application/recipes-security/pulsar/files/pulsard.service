@@ -1,0 +1,15 @@
+[Unit]
+Description=Pulsar Security Runtime Daemon
+After=local-fs.target
+Before=basic.target
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment=RUST_LOG=info,file-system-monitor=off,network-monitor=off
+ExecStart=/usr/bin/pulsard
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
